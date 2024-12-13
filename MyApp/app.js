@@ -19,8 +19,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', function(req, res) {
-  res.render('login');
+//session to store the user's username
+app.use(session({
+    secret: 'averylongrandomstring',
+    resave: false,
+    saveUninitialized: true
+}));
+
+//function for making sure the user is logged in before accessing any pages
+function isLoggedIn(req, res, next) {
+    if (req.session.loggedIn) {
+        return next();
+    }
+    res.redirect('/');
+}
 });
 
 app.listen(3000);
