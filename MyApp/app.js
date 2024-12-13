@@ -145,6 +145,30 @@ app.get('/wanttogo', isLoggedIn, function (req, res) {
     res.render('wanttogo');
 });
 
+//Function of the Add to Want to Go List Button
+app.post('/wanttogo', isLoggedIn, async function (req, res) {
+    var entry = req.body.destination;
+    var user = req.session.loggedIn.username;
+
+    try {
+        await client.connect();
+        var exists = await collection.findOne({ username: user, destinations: entry });
+        if (exists) {
+            return res.render(entry.toLowerCase(), { message: "Destination has already been added before", success: null });
+        }
+        else {
+            await collection.updateOne({ username: user }, { $addToSet: { destinations: entry } });
+            res.render(entry.toLowerCase(), { message: null, success: "Destination added to your list" });
+        }
+    }
+    catch (err) {
+        console.error("Error during addition:", err);
+        res.render(entry.toLowerCase(), { message: "Internal Server Error", success: null });
+    }
+    finally {
+        await client.close();
+    }
+
 });
 
 app.listen(3000);
