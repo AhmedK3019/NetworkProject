@@ -33,6 +33,64 @@ function isLoggedIn(req, res, next) {
     }
     res.redirect('/');
 }
+
+//get and post for the login page
+app.get('/', function (req, res) {
+    res.render('login', { error: null });
+});
+//get and post for the regsitration page
+app.get('/registration', function (req, res) {
+    res.render('registration', { error: null });
+});
+//isLoggedIn added to make sure they are logged in before entering the pages below
+app.get('/home', isLoggedIn, function (req, res) {
+    res.render('home');
+});
+
+app.get('/annapurna', isLoggedIn, function (req, res) {
+    res.render('annapurna', { message: null, success: null });
+});
+
+app.get('/bali', isLoggedIn, function (req, res) {
+    res.render('bali', { message: null, success: null });
+});
+
+app.get('/cities', isLoggedIn, function (req, res) {
+    res.render('cities');
+});
+
+app.get('/hiking', isLoggedIn, function (req, res) {
+    res.render('hiking');
+});
+
+app.get('/inca', isLoggedIn, function (req, res) {
+    res.render('inca', { message: null, success: null });
+});
+
+app.get('/islands', isLoggedIn, function (req, res) {
+    res.render('islands');
+});
+
+app.get('/paris', isLoggedIn, function (req, res) {
+    res.render('paris', { message: null, success: null });
+});
+
+app.get('/rome', isLoggedIn, function (req, res) {
+    res.render('rome', { message: null, success: null });
+});
+
+app.get('/santorini', isLoggedIn, function (req, res) {
+    res.render('santorini', { message: null, success: null });
+});
+
+app.get('/searchresults', isLoggedIn, function (req, res) {
+    res.render('searchresults');
+});
+
+app.get('/wanttogo', isLoggedIn, function (req, res) {
+    res.render('wanttogo');
+});
+
 });
 
 app.listen(3000);
