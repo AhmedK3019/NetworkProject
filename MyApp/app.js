@@ -38,6 +38,30 @@ function isLoggedIn(req, res, next) {
 app.get('/', function (req, res) {
     res.render('login', { error: null });
 });
+
+app.post('/', async function (req, res) {
+    const user = req.body.username;
+    const pass = req.body.password;
+
+    try {
+        await client.connect();
+
+        const result = await collection.findOne({ username: user, password: pass });
+
+        if (result) {
+            req.session.loggedIn = { username: user };
+            res.redirect('/home');
+        } else {
+            res.render('login', { error: "Invalid username or password" });
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        res.render('login', { error: "Internal Server Error" });
+    } finally {
+        await client.close();
+    }
+});
+
 //get and post for the regsitration page
 app.get('/registration', function (req, res) {
     res.render('registration', { error: null });
