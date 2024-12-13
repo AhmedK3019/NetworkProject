@@ -66,6 +66,36 @@ app.post('/', async function (req, res) {
 app.get('/registration', function (req, res) {
     res.render('registration', { error: null });
 });
+
+app.post('/register', async function (req, res) {
+    const user = req.body.username;
+    const pass = req.body.password;
+
+    if (!user || !pass) {
+        return res.render('registration', { error: "All fields are required" });
+    }
+
+    try {
+        await client.connect();
+
+        const existingUser = await collection.findOne({ username: user });
+        if (existingUser) {
+            return res.render('registration', { error: "Username is already taken" });
+        }
+
+        else {
+            await collection.insertOne({ username: user, password: pass });
+            res.redirect('/');
+        }
+
+    } catch (err) {
+        console.error("Error during registration:", err);
+        res.render('registration', { error: "Internal Server Error" });
+    } finally {
+        await client.close();
+    }
+});
+
 //isLoggedIn added to make sure they are logged in before entering the pages below
 app.get('/home', isLoggedIn, function (req, res) {
     res.render('home');
