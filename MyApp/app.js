@@ -1,18 +1,17 @@
 var express = require('express');
 var path = require('path');
-
 var app = express();
+var session = require('express-session');
 
+//MongoDB connection
 var { MongoClient } = require('mongodb');
-const url = 'mongodb://127.0.0.1:27017';
+var url = 'mongodb://127.0.0.1:27017';
 var client = new MongoClient(url);
-client.connect();
-var db = client.db('myDB');
-//insertion test
+//added the database and collection here to make it easier to access, instead of having to write it in every app.post function
+var db = client.db("myDB");
+var collection = db.collection("myCollection");
 
-
-
-// view engine setup
+//View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
