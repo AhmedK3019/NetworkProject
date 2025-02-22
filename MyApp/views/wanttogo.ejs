@@ -14,6 +14,7 @@
             text-align: center;
             -webkit-text-stroke: 1px blue;
         }
+        
     </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,5 +41,20 @@
             </form>
         </div>
     </nav>
+    <div class="container">
+        <% if (error !==undefined && error) { %>
+            <div class="error-message" style="color: white; font-weight: bold; text-align: center;">
+                <h2 style="margin-top: 325px;"> <%= error %></h2>
+            </div>
+            <% } else if (destinations.length> 0) { %>
+                <h1>Destinations:</h1>
+                <ul>
+                    <% destinations.forEach(function(destination) { %>
+                        <li>  <a href="<%= destination.toLowerCase() %>"> <%= destination %> </a>  </li>
+                        <% }); %>
+                </ul>
+            <% } %>
+    </div>
 </body>
+
 </html>
