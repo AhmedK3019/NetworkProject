@@ -36,7 +36,28 @@
                     aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
+            
         </div>
+        
     </nav>
+    <div class="container">
+
+
+
+
+        <% if (error) { %>
+            <div class="error-message" style="color: white; font-weight: bold; text-align: center;">
+               <h2 style="margin-top: 325px; font-weight: bold;"> <%= error %></h2>
+            </div>
+        <% } else if (theResult && theResult.length > 0) { %>
+            <ul> 
+                <% theResult.forEach(function(destination) { %>
+                    <li>
+                        <a href="<%= destination.link %>"><%= destination.name %></a>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } %>
+    </div>
 </body>
 </html>
