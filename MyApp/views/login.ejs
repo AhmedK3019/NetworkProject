@@ -46,14 +46,17 @@
         </form>
         <br>
         <a href="registration" style="color: black;">I don't have an account</a>
-        <br>
+        <br>`
         <br>
         <% if (typeof error !=='undefined' && error) { %>
             <div class="alert alert-danger" style="max-width: 300px;">
                 <%= error %>
             </div>
-            <% } %>
-                <br>
+            <% } else if (successMessage) { %>
+                <div class="alert alert-success" style="max-width: 350px;">
+                    <%= successMessage %>
+                </div>
+                <% } %>
     </div>
 </body>
 
