@@ -7,7 +7,7 @@ var session = require('express-session');
 var { MongoClient } = require('mongodb');
 var url = 'mongodb://127.0.0.1:27017';
 var client = new MongoClient(url);
-//added the database and collection here to make it easier to access, instead of having to write it in every app.post function
+//added the database and collection here to make it easier to access, instead of having to write it in every function
 var db = client.db("myDB");
 var collection = db.collection("myCollection");
 
@@ -36,7 +36,8 @@ function isLoggedIn(req, res, next) {
 
 //get and post for the login page
 app.get('/', function (req, res) {
-    res.render('login', { error: null });
+    var successMessage = req.session.successMessage; 
+    res.render('login', { error: null, successMessage: successMessage });
 });
 
 app.post('/', async function (req, res) {
@@ -85,6 +86,7 @@ app.post('/register', async function (req, res) {
 
         else {
             await collection.insertOne({ username: user, password: pass });
+            req.session.successMessage = 'Registration successful! Please log in.';
             res.redirect('/');
         }
 
@@ -138,11 +140,54 @@ app.get('/santorini', isLoggedIn, function (req, res) {
 });
 
 app.get('/searchresults', isLoggedIn, function (req, res) {
-    res.render('searchresults');
+    res.render('searchresults', { error: null, theResult: [] });
 });
 
-app.get('/wanttogo', isLoggedIn, function (req, res) {
-    res.render('wanttogo');
+var destinationss = [ { name: "Rome", link: "/rome" }, { name: "Bali Island", link: "/bali" }, { name: "Annapurna Circuit", link: "/annapurna" }, { name: "Inca Trail to Machu Picchu", link: "/inca" }, { name: "Paris", link: "/paris" }, { name: "Santorini Island", link: "/santorini" }, ];
+
+
+app.post("/search", function(req, res)  {
+    var searchKey = req.body.Search.toLowerCase(); 
+    
+    function includesSearchKey(destination) {
+        return destination.name.toLowerCase().includes(searchKey.toLowerCase());
+    }
+    var results = destinationss.filter(includesSearchKey);
+  
+    if (results.length > 0) {
+      res.render("searchresults", { error: null, theResult: results });
+    } else {
+      res.render("searchresults", { error: "No Destination Found", theResult: null });
+    }
+  });
+
+
+//The want to go page to view the destinations the user has added in their list (The mongoDB database)
+app.get('/wanttogo', isLoggedIn, async function (req, res) {
+    var user = req.session.loggedIn.username;
+
+    try {
+        await client.connect();
+        var Usercheck = await collection.findOne({ username: user });
+        var destinations = [];
+        
+        if (Usercheck && Usercheck.destinations) {
+            destinations = Usercheck.destinations;
+        }
+
+        if (destinations.length === 0) {
+            res.render('wanttogo', { destinations: [], error: "You have no destinations in your list" });
+        }
+        else {
+            res.render('wanttogo', { destinations: Usercheck.destinations, error: null });
+        }
+    } catch (err) {
+        console.error("Error during search:", err);
+        res.render('wanttogo', { destinations: [], error: "Internal Server Error" });
+    }
+    finally {
+        await client.close();
+    }
 });
 
 //Function of the Add to Want to Go List Button
